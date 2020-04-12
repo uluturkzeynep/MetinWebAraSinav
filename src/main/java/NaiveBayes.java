@@ -20,7 +20,7 @@ public class NaiveBayes {
     
     public NaiveBayes() throws FileNotFoundException, IOException{
     d.dosyalariCek();
-    d.readStopWords();
+    d.readStopWords();//bu projede stopwords'lerin çıkarılıp çıkarılmayacağından emin değilim çıkarılabilir.
     d.egitimVerileri();
     sozlukOlustur();
     calcPrior();

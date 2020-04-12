@@ -6,6 +6,8 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import zemberek.morphology.analysis.SingleAnalysis;
+import zemberek.morphology.analysis.WordAnalysis;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -33,7 +35,9 @@ public class Main {
                  System.out.println("Analiz yapılacak kelimeyi giriniz");
                  String kelime=scan.nextLine(); 
                  //String normalize=Normalizer.normalize(kelime, Normalizer.Form.NFD);
-                 System.out.println("Kelime "+kelime+" p "+nb.conditionalProbabilities(kelime)+" "+nb.classification());
+                 //kelimeyle alakalı diğer tüm işlemleri kökler üzerine yaptığım için analiz edilecek kelimeninde
+                 //kök haliyle işlem görmesinin daha mantıklı olacağını düşündüm ama kaldırılabilir.
+                 System.out.println("Kelime "+kelime+" p "+nb.conditionalProbabilities(nb.d.stemmize(kelime))+" "+nb.classification());
                  break;
                  
              case 2:
@@ -45,7 +49,7 @@ public class Main {
          }
          
         
-        
     }
+    
       
 }

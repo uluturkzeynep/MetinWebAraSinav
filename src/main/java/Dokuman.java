@@ -138,7 +138,12 @@ public class Dokuman {
          }
          return tF;
      }
-     
+      public String stemmize(String kelime){//gönderilecek kelimenin kökünü buluyor
+     WordAnalysis result = morphology.analyze(kelime);
+     String stem=result.getAnalysisResults().get(0).getStem();
+      
+         return stem;
+     }
      public void egitimVerileri(){
       for(String cumle:olumlu){
           olumluEgitimVerisi.put(cumle, getTF(cumle));//<cümle,<kelime kökü,kelime kökünün frekansı>> şeklinde tutuyor.
