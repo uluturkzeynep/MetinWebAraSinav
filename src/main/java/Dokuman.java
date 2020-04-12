@@ -38,11 +38,11 @@ public class Dokuman {
     public Dokuman() throws FileNotFoundException, IOException{
     }
     
-    private String sınıf;
+   
     static Path lookupRoot = Paths.get("src/main/java/normalization");
     static Path lmFile = Paths.get("src/main/java/lm/lm.2gram.slm");
     static  TurkishMorphology morphology = TurkishMorphology.createWithDefaults();
-    static TurkishSentenceNormalizer normalizer = new TurkishSentenceNormalizer(morphology, lookupRoot, lmFile);
+    static TurkishSentenceNormalizer normalizer = new TurkishSentenceNormalizer(morphology, lookupRoot, lmFile);//çalışmasına neden olmayan bir hata nasıl giderileceği hakkında bir fikrim yok.
     TurkishSpellChecker spellChecker = new TurkishSpellChecker(morphology);
     List<String> olumlu=new ArrayList<String>();
     List<String> olumsuz=new ArrayList<String>();
@@ -54,42 +54,41 @@ public class Dokuman {
      
      File[] folder = dir.listFiles(); //Cümleleri çekme kısmı
         for(File table : folder) {
-                    sınıf=table.getName();
             //System.out.println(table);
             File[] filenames = table.listFiles();
                 for (File file : filenames) {
-                    if(file.getParentFile().getName().equals("Olumlu")){ 
+                    if(file.getParentFile().getName().equals("Olumlu")){ //Eğer Olumlu klasörünün içindeyse...
                        Scanner scanner = new Scanner(file); 
                        StringBuffer buffer=new StringBuffer();
 			while (scanner.hasNextLine()) {
                              buffer.append(scanner.nextLine().replaceAll("\\d","").replaceAll("\\p{Punct}", "").toLowerCase(new Locale("tr-TR")));
                                }
-                        olumlu.add(normalizer.normalize(new String(buffer)));
+                        olumlu.add(normalizer.normalize(new String(buffer)));//olumlu cümlelerin list'ine atıyor.
                     }
-                    else if (file.getParentFile().getName().equals("Olumsuz")) {
+                    else if (file.getParentFile().getName().equals("Olumsuz")) {//Eğer Olumsuz klasörünün içindeyse...
                         Scanner scanner = new Scanner(file); 
                         StringBuffer buffer=new StringBuffer();
 			while (scanner.hasNextLine()) {
                              buffer.append(scanner.nextLine().replaceAll("\\d","").replaceAll("\\p{Punct}", "").toLowerCase(new Locale("tr-TR")));
                                }
-                        olumsuz.add(normalizer.normalize(new String(buffer)));
+                        olumsuz.add(normalizer.normalize(new String(buffer)));//olumsuz cümlelerin list'ine atıyor.
                     }
-                    else if (file.getParentFile().getName().equals("Nötr")) { 
+                    else if (file.getParentFile().getName().equals("Nötr")) { //Eğer Nötr klasörünün içindeyse...
                        Scanner scanner = new Scanner(file); 
                        StringBuffer buffer=new StringBuffer();
 			while (scanner.hasNextLine()) {
                              buffer.append(scanner.nextLine().replaceAll("\\d","").replaceAll("\\p{Punct}", "").toLowerCase(new Locale("tr-TR")));
                                }
-                        notr.add(normalizer.normalize(new String(buffer)));
+                        notr.add(normalizer.normalize(new String(buffer)));//nötr cümlelerin list'ine atıyor.
                     }
             }
     }
-        olumluDokumanSayisi=olumlu.size();
-        olumsuzDokumanSayisi=olumsuz.size();
-        notrDokumanSayisi=notr.size();
-        dokumanSayisi=olumlu.size()+olumsuz.size()+notr.size();
+        olumluDokumanSayisi=olumlu.size(); //toplam olumlu text sayısı
+        olumsuzDokumanSayisi=olumsuz.size();//olumsuz olumlu text sayısı
+        notrDokumanSayisi=notr.size();//nötr olumlu text sayısı
+        dokumanSayisi=olumlu.size()+olumsuz.size()+notr.size();//toplam text sayısı
     }
-    public static String normalize(String kelime){
+    public static String normalize(String kelime){//lazım olursa diye verilen kelimeyi normalize etme fonk.
     kelime=normalizer.normalize(kelime);
         return kelime;
     }
@@ -106,7 +105,7 @@ public class Dokuman {
         }
      static TurkishTokenizer tokenizer = TurkishTokenizer.DEFAULT;
      LanguageIdentifier lid = LanguageIdentifier.fromInternalModelGroup("tr_group");
-     public List<String> tokenize(String cumle){
+     public List<String> tokenize(String cumle){//gönderilen cümlenin kelime list'ini döndüren fonksiyon
          List<String> tokens=new ArrayList<String>();
          Iterator<Token> tokenIterator = tokenizer.getTokenIterator(cumle);
     while (tokenIterator.hasNext()) {
@@ -117,7 +116,7 @@ public class Dokuman {
     return tokens;
      }
      
-     Map<String, Map<String,Integer>> olumluEgitimVerisi = new HashMap<>();
+     Map<String, Map<String,Integer>> olumluEgitimVerisi = new HashMap<>();//<cümle,<kelime kökü,kelime kökünün frekansı>> şeklinde tutuyor.
      Map<String, Map<String,Integer>> olumsuzEgitimVerisi = new HashMap<>();
      Map<String, Map<String,Integer>> notrEgitimVerisi = new HashMap<>();
     
@@ -142,7 +141,7 @@ public class Dokuman {
      
      public void egitimVerileri(){
       for(String cumle:olumlu){
-          olumluEgitimVerisi.put(cumle, getTF(cumle));
+          olumluEgitimVerisi.put(cumle, getTF(cumle));//<cümle,<kelime kökü,kelime kökünün frekansı>> şeklinde tutuyor.
       }
       for(String cumle:olumsuz){
           olumsuzEgitimVerisi.put(cumle, getTF(cumle));
@@ -152,7 +151,7 @@ public class Dokuman {
       }
       for (Map<String,Integer> entry : olumluEgitimVerisi.values()) {
           for(Integer in:entry.values()){
-                 olumluToplamKelimeSayısı+=in;
+                 olumluToplamKelimeSayısı+=in;//olumlu textlerinde toplam kelime sayısı
              }
       }
        for (Map<String,Integer> entry : olumsuzEgitimVerisi.values()) {
@@ -168,7 +167,7 @@ public class Dokuman {
      }
      public double olumluSınıf=0.0,olumsuzSınıf=0.0,notrSınıf=0.0;
      Integer olumluToplamKelimeSayısı=0,notrToplamKelimeSayısı=0,olumsuzToplamKelimeSayısı=0;
-     public void getIDF(String kelime){
+     public void getIDF(String kelime){//fonksiyona gönderilen kelimenin olumlu,olumsuz ve nötr metinlerinde kaç kere geçtiğinin sayısını öğrenme
          olumluSınıf=0.0;olumsuzSınıf=0.0;notrSınıf=0.0;
          for (Map<String,Integer> entry : olumluEgitimVerisi.values()) {
                 if(entry.containsKey(kelime)){
@@ -185,7 +184,7 @@ public class Dokuman {
              }}
          
          }
-     public static <T> void removeDuplicate(List <T> list) {
+     public static <T> void removeDuplicate(List <T> list) { //Tekrar eden verileri listten çıkarma
 Set <T> set = new HashSet <T>();
 List <T> newList = new ArrayList <T>();
 for (Iterator <T>iter = list.iterator();    iter.hasNext(); ) {

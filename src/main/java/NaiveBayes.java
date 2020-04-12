@@ -26,7 +26,7 @@ public class NaiveBayes {
     calcPrior();
     }
     List<String> sozcukler=new ArrayList<String>();
-    public void sozlukOlustur() throws IOException{
+    public void sozlukOlustur() throws IOException{ //tüm kelimelerin bir araya gelmesi
         for (Map<String,Integer> entry : d.olumluEgitimVerisi.values()) {
             for(String key:entry.keySet())
               sozcukler.add(key);
@@ -42,26 +42,26 @@ public class NaiveBayes {
         d.removeDuplicate(sozcukler);
     }
     Dokuman d=new Dokuman();
-    double olumluP=0.0,olumsuzP=0.0,notrP=0.0;
-    public void calcPrior(){
-       olumluP=d.olumluDokumanSayisi/d.dokumanSayisi;
-       olumsuzP=d.olumsuzDokumanSayisi/d.dokumanSayisi;
-       notrP=d.notrDokumanSayisi/d.dokumanSayisi;
+    double olumluPrior=0.0,olumsuzPrior=0.0,notrPrior=0.0;
+    public void calcPrior(){//Prior olasılıklarını hesaplama
+       olumluPrior=d.olumluDokumanSayisi/d.dokumanSayisi;
+       olumsuzPrior=d.olumsuzDokumanSayisi/d.dokumanSayisi;
+       notrPrior=d.notrDokumanSayisi/d.dokumanSayisi;
         //System.out.println(olumluP);
     }
     
     double condOlumlu=0.0,condOlumsuz=0.0,condNotr=0.0;
-    public double conditionalProbabilities(String kelime){
+    public double conditionalProbabilities(String kelime){//multinomal naive bayes hesabı
         condOlumlu=0.0;condOlumsuz=0.0;condNotr=0.0;
-        d.getIDF(kelime);
-        condOlumlu=olumluP*((d.olumluSınıf+1)/(d.olumluToplamKelimeSayısı+sozcukler.size()));
-        condOlumsuz=olumsuzP*((d.olumsuzSınıf+1)/(d.olumsuzToplamKelimeSayısı+sozcukler.size()));
-        condNotr=notrP*((d.notrSınıf+1)/(d.notrToplamKelimeSayısı+sozcukler.size()));
+        d.getIDF(kelime); //olumluSınıf,olumsuzSınıf,notrSınıf dediğim değişkenler kelimenin o sınıflardaki bulunma sayısı
+        condOlumlu=olumluPrior*((d.olumluSınıf+1)/(d.olumluToplamKelimeSayısı+sozcukler.size()));
+        condOlumsuz=olumsuzPrior*((d.olumsuzSınıf+1)/(d.olumsuzToplamKelimeSayısı+sozcukler.size()));
+        condNotr=notrPrior*((d.notrSınıf+1)/(d.notrToplamKelimeSayısı+sozcukler.size()));
         return max(condOlumlu, condOlumsuz,condNotr);
     }
     
     public String classification(){
-        String sinif="Nötr";
+        String sinif="Nötr";//hangi cond sonucu en yüksek çıkarsa atamayı ona yapması..
     if(max(condOlumlu, condOlumsuz,condNotr)==condOlumlu){
     sinif="Olumlu";
     }
